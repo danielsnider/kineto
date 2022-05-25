@@ -255,23 +255,24 @@ class RunProfileData(object):
                     ' time are launched by Tensor Cores eligible operators. '
                     f"You could enable {href('Automatic Mixed Precision', url)} to speedup by using FP16.")
 
-            # Memory related
-            if self.memory_snapshot:
-                for (dev_type, dev_id), peak_mem in self.memory_snapshot.get_peak_memory().items():
-                    if dev_type == -1:  # ignore cpu
-                        continue
-                    total_mem = self.device_props[dev_id].get('totalGlobalMem')
-                    if total_mem is not None and peak_mem > total_mem * 0.9:
-                        percentage = peak_mem / total_mem * 100
-                        total_mem_gb = total_mem / 1024 / 1024 / 1024
-                        ckp_url = 'https://pytorch.org/docs/stable/checkpoint.html'
-                        amp_url = 'https://pytorch.org/docs/stable/amp.html'
-                        self.recommendations.append(
-                            f'Device memory usage is at the limit of device memory capacity '
-                            f'({percentage:.1f}% of {total_mem_gb:.1f}GB on GPU{dev_id}). '
-                            'To get better value of your GPU or to use larger batch size for training, please refer to '
-                            f"{href('Gradient Checkpoint', ckp_url)} or {href('Automatic Mixed Precision', amp_url)}.")
-                        break
+            # # Memory related
+            # Disable due to warnings
+            # if self.memory_snapshot:
+            #     for (dev_type, dev_id), peak_mem in self.memory_snapshot.get_peak_memory().items():
+            #         if dev_type == -1:  # ignore cpu
+            #             continue
+            #         total_mem = self.device_props[dev_id].get('totalGlobalMem')
+            #         if total_mem is not None and peak_mem > total_mem * 0.9:
+            #             percentage = peak_mem / total_mem * 100
+            #             total_mem_gb = total_mem / 1024 / 1024 / 1024
+            #             ckp_url = 'https://pytorch.org/docs/stable/checkpoint.html'
+            #             amp_url = 'https://pytorch.org/docs/stable/amp.html'
+            #             self.recommendations.append(
+            #                 f'Device memory usage is at the limit of device memory capacity '
+            #                 f'({percentage:.1f}% of {total_mem_gb:.1f}GB on GPU{dev_id}). '
+            #                 'To get better value of your GPU or to use larger batch size for training, please refer to '
+            #                 f"{href('Gradient Checkpoint', ckp_url)} or {href('Automatic Mixed Precision', amp_url)}.")
+            #             break
 
     def _analyze_distributed_metrics(self):
         if self.use_dp and len(self.used_devices) > 1:
