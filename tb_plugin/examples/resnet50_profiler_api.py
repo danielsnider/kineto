@@ -6,6 +6,7 @@ import torch.utils.data
 import torchvision
 import torchvision.transforms as T
 import torchvision.models as models
+import datetime
 
 import torch.profiler
 
@@ -24,6 +25,9 @@ criterion = nn.CrossEntropyLoss().cuda()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 device = torch.device("cuda:0")
 model.train()
+
+last_time = datetime.datetime.now()
+print(last_time)
 
 with torch.profiler.profile(
     activities=[
@@ -48,6 +52,12 @@ with torch.profiler.profile(
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        this_time = datetime.datetime.now()
+        tdelta = this_time - last_time
+        print(tdelta)
+        last_time = this_time
+
         if step + 1 >= 6:
             break
         p.step()
